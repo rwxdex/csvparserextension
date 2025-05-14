@@ -34,5 +34,5 @@ func createExtension(
 	params extension.Settings,
 	cfg component.Config,
 ) (extension.Extension, error) {
-	return newCSVParserExtension(config, set.Logger), nil
+	return newCSVParserExtension(params.Logger, cfg.(*Config))
 }

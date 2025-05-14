@@ -6,7 +6,6 @@ import (
 
 	"go.opentelemetry.io/collector/component"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/ottlcommon"
 )
 
 // LookupCSVValue - функция для поиска значений в CSV данных по ID

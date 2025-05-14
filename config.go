@@ -5,21 +5,25 @@ import (
 	"path/filepath"
 
 	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/confmap"
 )
 
-// Config определяет конфигурацию для расширения CSV Parser.
+// Config defines configuration for CSV Parser extension.
 type Config struct {
-	// FilePath - путь к CSV файлу
+	// FilePath is the path to the CSV file
 	FilePath string `mapstructure:"file_path"`
 	
-	// RefreshInterval - интервал в секундах, через который CSV файл будет перезагружаться
+	// RefreshInterval is the interval at which the CSV file should be reloaded (in seconds)
 	RefreshInterval int `mapstructure:"refresh_interval"`
 	
-	// HasHeader - указывает, содержит ли CSV файл заголовок
+	// HasHeader indicates if the CSV file has a header row
 	HasHeader bool `mapstructure:"has_header"`
 }
 
-// Validate проверяет конфигурацию
+var _ component.Config = (*Config)(nil)
+var _ confmap.Unmarshaler = (*Config)(nil)
+
+// Validate validates the configuration
 func (c *Config) Validate() error {
 	if c.FilePath == "" {
 		return fmt.Errorf("file_path cannot be empty")
@@ -35,4 +39,18 @@ func (c *Config) Validate() error {
 	}
 	
 	return nil
+}
+
+// Unmarshal is the custom unmarshaler for this config
+func (c *Config) Unmarshal(componentParser *confmap.Conf) error {
+	if componentParser == nil {
+		return nil
+	}
+	
+	// Set defaults
+	c.RefreshInterval = 300
+	c.HasHeader = true
+	
+	// Unmarshal the config
+	return componentParser.Unmarshal(c)
 }

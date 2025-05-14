@@ -7,37 +7,33 @@ import (
 	"go.uber.org/zap"
 )
 
-// TypeStr - тип расширения, используемый в конфигурации
-const TypeStr = "csv_parser"
-
-// CSVParserExtension реализует component.Extension для обеспечения функциональности парсинга CSV
-type CSVParserExtension struct {
+// csvParserExtension implements component.Extension to provide CSV parsing functionality
+type csvParserExtension struct {
 	logger *zap.Logger
 	config *Config
-	parser *CSVParser
+	parser *csvParser
 }
 
-// NewCSVParserExtension создает новый экземпляр CSVParserExtension
-func NewCSVParserExtension(config *Config, logger *zap.Logger) *CSVParserExtension {
-	return &CSVParserExtension{
+// newCSVParserExtension creates a new csvParserExtension
+func newCSVParserExtension(config *Config, logger *zap.Logger) *csvParserExtension {
+	return &csvParserExtension{
 		logger: logger,
 		config: config,
-		parser: NewCSVParser(logger, config),
+		parser: newCSVParser(logger, config),
 	}
 }
 
-// Start запускает расширение
-func (e *CSVParserExtension) Start(ctx context.Context, host component.Host) error {
-	return e.parser.Start(ctx)
+// Start starts the extension
+func (e *csvParserExtension) Start(ctx context.Context, host component.Host) error {
+	return e.parser.start(ctx)
 }
 
-// Shutdown останавливает расширение
-func (e *CSVParserExtension) Shutdown(ctx context.Context) error {
-	return e.parser.Stop(ctx)
+// Shutdown stops the extension
+func (e *csvParserExtension) Shutdown(ctx context.Context) error {
+	return e.parser.stop(ctx)
 }
 
-// GetParser возвращает CSV парсер
-func (e *CSVParserExtension) GetParser() *CSVParser {
+// GetParser returns the CSV parser
+func (e *csvParserExtension) GetParser() *csvParser {
 	return e.parser
 }
-

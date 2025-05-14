@@ -11,16 +11,16 @@ import (
 	"go.uber.org/zap"
 )
 
-// CSVData представляет распарсенные данные CSV
+// CSVData represents the parsed CSV data
 type CSVData struct {
-	// Data - карта, где ключ - ID, а значение - карта имени столбца и значения
+	// Data is a map where key is the ID and value is a map of column name to value
 	Data map[string]map[string]string
-	// Headers - имена столбцов
+	// Headers are the column names
 	Headers []string
 }
 
-// CSVParser обрабатывает парсинг CSV файла
-type CSVParser struct {
+// csvParser handles the parsing of the CSV file
+type csvParser struct {
 	logger         *zap.Logger
 	config         *Config
 	data           *CSVData
@@ -29,9 +29,9 @@ type CSVParser struct {
 	refreshTicker  *time.Ticker
 }
 
-// NewCSVParser создает новый CSV парсер
-func NewCSVParser(logger *zap.Logger, config *Config) *CSVParser {
-	return &CSVParser{
+// newCSVParser creates a new CSV parser
+func newCSVParser(logger *zap.Logger, config *Config) *csvParser {
+	return &csvParser{
 		logger:   logger,
 		config:   config,
 		data:     &CSVData{Data: make(map[string]map[string]string)},
@@ -39,14 +39,14 @@ func NewCSVParser(logger *zap.Logger, config *Config) *CSVParser {
 	}
 }
 
-// Start начинает процесс парсинга CSV
-func (p *CSVParser) Start(ctx context.Context) error {
-	// Изначально парсим CSV файл
+// start begins the CSV parsing process
+func (p *csvParser) start(ctx context.Context) error {
+	// Parse the CSV file initially
 	if err := p.parseCSV(); err != nil {
 		return err
 	}
 	
-	// Если установлен интервал обновления, запускаем тикер для периодической перезагрузки файла
+	// If refresh interval is set, start a ticker to reload the file periodically
 	if p.config.RefreshInterval > 0 {
 		p.refreshTicker = time.NewTicker(time.Duration(p.config.RefreshInterval) * time.Second)
 		go func() {
@@ -68,8 +68,8 @@ func (p *CSVParser) Start(ctx context.Context) error {
 	return nil
 }
 
-// Stop останавливает процесс парсинга CSV
-func (p *CSVParser) Stop(ctx context.Context) error {
+// stop stops the CSV parsing process
+func (p *csvParser) stop(ctx context.Context) error {
 	if p.refreshTicker != nil {
 		p.refreshTicker.Stop()
 	}
@@ -77,23 +77,23 @@ func (p *CSVParser) Stop(ctx context.Context) error {
 	return nil
 }
 
-// GetData возвращает распарсенные данные CSV
-func (p *CSVParser) GetData() *CSVData {
+// GetData returns the parsed CSV data
+func (p *csvParser) GetData() *CSVData {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return p.data
 }
 
-// GetValueByID возвращает значения для заданного ID
-func (p *CSVParser) GetValueByID(id string) (map[string]string, bool) {
+// GetValueByID returns the values for a given ID
+func (p *csvParser) GetValueByID(id string) (map[string]string, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	values, exists := p.data.Data[id]
 	return values, exists
 }
 
-// parseCSV читает и парсит CSV файл
-func (p *CSVParser) parseCSV() error {
+// parseCSV reads and parses the CSV file
+func (p *csvParser) parseCSV() error {
 	p.logger.Info("Parsing CSV file", zap.String("file_path", p.config.FilePath))
 	
 	file, err := os.Open(p.config.FilePath)
@@ -121,7 +121,7 @@ func (p *CSVParser) parseCSV() error {
 		newData.Headers = records[0]
 		startIdx = 1
 	} else {
-		// Если нет заголовка, создаем имена столбцов по умолчанию
+		// If no header, create default column names
 		newData.Headers = make([]string, len(records[0]))
 		newData.Headers[0] = "id"
 		for i := 1; i < len(records[0]); i++ {
@@ -150,7 +150,7 @@ func (p *CSVParser) parseCSV() error {
 		newData.Data[id] = values
 	}
 	
-	// Обновляем данные с блокировкой записи
+	// Update the data with a write lock
 	p.mu.Lock()
 	p.data = newData
 	p.mu.Unlock()

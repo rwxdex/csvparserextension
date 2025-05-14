@@ -7,10 +7,15 @@ import (
 	"go.opentelemetry.io/collector/extension"
 )
 
-// NewFactory создает фабрику для расширения CSV parser.
+const (
+	// The value of extension "type" in configuration.
+	typeStr = "csv_parser"
+)
+
+// NewFactory creates a factory for the CSV parser extension.
 func NewFactory() extension.Factory {
 	return extension.NewFactory(
-		component.MustNewType(TypeStr),
+		typeStr,
 		createDefaultConfig,
 		createExtension,
 		component.StabilityLevelDevelopment,
@@ -19,17 +24,16 @@ func NewFactory() extension.Factory {
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		RefreshInterval: 300, // Обновление каждые 5 минут по умолчанию
+		RefreshInterval: 300, // Default refresh every 5 minutes
 		HasHeader:       true,
 	}
 }
 
 func createExtension(
-	ctx context.Context,
-	set extension.CreateSettings,
+	_ context.Context,
+	params extension.CreateSettings,
 	cfg component.Config,
 ) (extension.Extension, error) {
 	config := cfg.(*Config)
-	return NewCSVParserExtension(config, set.Logger), nil
+	return newCSVParserExtension(config, params.Logger), nil
 }
-

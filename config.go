@@ -3,21 +3,23 @@ package csvparser
 import (
 	"fmt"
 	"path/filepath"
+
+	"go.opentelemetry.io/collector/component"
 )
 
-// Config defines configuration for CSV Parser extension.
+// Config определяет конфигурацию для расширения CSV Parser.
 type Config struct {
-	// FilePath is the path to the CSV file
+	// FilePath - путь к CSV файлу
 	FilePath string `mapstructure:"file_path"`
 	
-	// RefreshInterval is the interval at which the CSV file should be reloaded (in seconds)
+	// RefreshInterval - интервал в секундах, через который CSV файл будет перезагружаться
 	RefreshInterval int `mapstructure:"refresh_interval"`
 	
-	// HasHeader indicates if the CSV file has a header row
+	// HasHeader - указывает, содержит ли CSV файл заголовок
 	HasHeader bool `mapstructure:"has_header"`
 }
 
-// Validate validates the configuration
+// Validate проверяет конфигурацию
 func (c *Config) Validate() error {
 	if c.FilePath == "" {
 		return fmt.Errorf("file_path cannot be empty")

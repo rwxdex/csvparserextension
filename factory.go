@@ -31,9 +31,8 @@ func createDefaultConfig() component.Config {
 
 func createExtension(
 	_ context.Context,
-	set component.ExtensionCreateSettings,
+	params extension.Settings,
 	cfg component.Config,
 ) (extension.Extension, error) {
-	config := cfg.(*Config)
 	return newCSVParserExtension(config, set.Logger), nil
 }

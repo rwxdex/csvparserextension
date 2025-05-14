@@ -15,7 +15,7 @@ const (
 // NewFactory creates a factory for the CSV parser extension.
 func NewFactory() extension.Factory {
 	return extension.NewFactory(
-		typeStr,
+		component.MustNewType(typeStr),
 		createDefaultConfig,
 		createExtension,
 		component.StabilityLevelDevelopment,
@@ -31,9 +31,9 @@ func createDefaultConfig() component.Config {
 
 func createExtension(
 	_ context.Context,
-	params extension.CreateSettings,
+	set component.ExtensionCreateSettings,
 	cfg component.Config,
 ) (extension.Extension, error) {
 	config := cfg.(*Config)
-	return newCSVParserExtension(config, params.Logger), nil
+	return newCSVParserExtension(config, set.Logger), nil
 }

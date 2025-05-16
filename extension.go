@@ -37,3 +37,8 @@ func (e *csvParserExtension) Shutdown(ctx context.Context) error {
 func (e *csvParserExtension) GetParser() *csvParser {
 	return e.parser
 }
+
+// GetCSVData возвращает данные CSV для указанного ID
+func (e *csvParserExtension) GetCSVData(id string) (map[string]string, bool) {
+	return e.parser.GetValueByID(id)
+}

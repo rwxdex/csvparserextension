@@ -14,6 +14,9 @@ type csvParserExtension struct {
 	parser *csvParser
 }
 
+// Ensure csvParserExtension implements extension.Extension
+var _ component.Extension = (*csvParserExtension)(nil)
+
 // newCSVParserExtension creates a new csvParserExtension
 func newCSVParserExtension(config *Config, logger *zap.Logger) *csvParserExtension {
 	return &csvParserExtension{
@@ -38,7 +41,13 @@ func (e *csvParserExtension) GetParser() *csvParser {
 	return e.parser
 }
 
-// GetCSVData возвращает данные CSV для указанного ID
-func (e *csvParserExtension) GetCSVData(id string) (map[string]string, bool) {
-	return e.parser.GetValueByID(id)
+// LookupValue looks up a value in the CSV data by ID and field
+func (e *csvParserExtension) LookupValue(id, field string) (string, bool) {
+	values, exists := e.parser.GetValueByID(id)
+	if !exists {
+		return "", false
+	}
+	
+	value, exists := values[field]
+	return value, exists
 }

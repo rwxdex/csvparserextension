@@ -14,6 +14,15 @@ type CSVParserExtension struct {
 	parser *CSVParser
 }
 
+// newCSVParserExtension creates a new csvParserExtension
+func NewCSVParserExtension(config *Config, logger *zap.Logger) *csvParserExtension {
+	return &csvParserExtension{
+		logger: logger,
+		config: config,
+		parser: newCSVParser(logger, config),
+	}
+}
+
 // Start starts the extension
 func (e *CSVParserExtension) Start(ctx context.Context, host component.Host) error {
 	return e.parser.start(ctx)

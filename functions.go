@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"go.opentelemetry.io/collector/component"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor/internal/common"
 )
 
 // Регистрируем функцию с именем, начинающимся с заглавной буквы

@@ -6,16 +6,17 @@ import (
 
 	"go.opentelemetry.io/collector/component"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor"
+	"go.opentelemetry.io/collector/extension"
 )
 
 // Регистрируем функцию с именем, начинающимся с заглавной буквы
 func RegisterFunctions() {
 	// Регистрация функций для transform processor
-	transformprocessor.RegisterFunction("CsvLookup", CsvLookupFunction)
+	extension.RegisterFunction("CsvLookup", CsvLookupFunction)
 }
 
 // CsvLookupFunction - функция для использования в transform processor
-func CsvLookupFunction(ctx context.Context, tCtx transformprocessor.TransformContext, args ...interface{}) (interface{}, error) {
+func CsvLookupFunction(ctx context.Context, tCtx extension.TransformContext, args ...interface{}) (interface{}, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("CsvLookup function requires exactly 2 arguments (id, field), got %d", len(args))
 	}

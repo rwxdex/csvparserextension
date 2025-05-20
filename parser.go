@@ -19,8 +19,8 @@ type CSVData struct {
 	Headers []string
 }
 
-// csvParser handles the parsing of the CSV file
-type csvParser struct {
+// CSVParser handles the parsing of the CSV file
+type CSVParser struct {
 	logger         *zap.Logger
 	config         *Config
 	data           *CSVData
@@ -30,8 +30,8 @@ type csvParser struct {
 }
 
 // newCSVParser creates a new CSV parser
-func newCSVParser(logger *zap.Logger, config *Config) *csvParser {
-	return &csvParser{
+func newCSVParser(logger *zap.Logger, config *Config) *CSVParser {
+	return &CSVParser{
 		logger:   logger,
 		config:   config,
 		data:     &CSVData{Data: make(map[string]map[string]string)},
@@ -40,7 +40,7 @@ func newCSVParser(logger *zap.Logger, config *Config) *csvParser {
 }
 
 // start begins the CSV parsing process
-func (p *csvParser) start(ctx context.Context) error {
+func (p *CSVParser) start(ctx context.Context) error {
 	// Parse the CSV file initially
 	if err := p.parseCSV(); err != nil {
 		return err
@@ -69,7 +69,7 @@ func (p *csvParser) start(ctx context.Context) error {
 }
 
 // stop stops the CSV parsing process
-func (p *csvParser) stop(ctx context.Context) error {
+func (p *CSVParser) stop(ctx context.Context) error {
 	if p.refreshTicker != nil {
 		p.refreshTicker.Stop()
 	}
@@ -78,14 +78,14 @@ func (p *csvParser) stop(ctx context.Context) error {
 }
 
 // GetData returns the parsed CSV data
-func (p *csvParser) GetData() *CSVData {
+func (p *CSVParser) GetData() *CSVData {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return p.data
 }
 
 // GetValueByID returns the values for a given ID
-func (p *csvParser) GetValueByID(id string) (map[string]string, bool) {
+func (p *CSVParser) GetValueByID(id string) (map[string]string, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	values, exists := p.data.Data[id]
@@ -93,7 +93,7 @@ func (p *csvParser) GetValueByID(id string) (map[string]string, bool) {
 }
 
 // parseCSV reads and parses the CSV file
-func (p *csvParser) parseCSV() error {
+func (p *CSVParser) parseCSV() error {
 	p.logger.Info("Parsing CSV file", zap.String("file_path", p.config.FilePath))
 	
 	file, err := os.Open(p.config.FilePath)

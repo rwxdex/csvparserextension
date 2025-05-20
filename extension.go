@@ -14,9 +14,9 @@ type CSVParserExtension struct {
 	parser *CSVParser
 }
 
-// newCSVParserExtension creates a new csvParserExtension
-func NewCSVParserExtension(config *Config, logger *zap.Logger) *csvParserExtension {
-	return &csvParserExtension{
+// newCSVParserExtension creates a new CSVParserExtension
+func NewCSVParserExtension(config *Config, logger *zap.Logger) *CSVParserExtension {
+	return &CSVParserExtension{
 		logger: logger,
 		config: config,
 		parser: newCSVParser(logger, config),

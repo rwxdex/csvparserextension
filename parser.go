@@ -158,7 +158,7 @@ func (p *CSVParser) parseCSV() error {
 	p.logger.Info("Successfully parsed CSV file", 
 		zap.String("file_path", p.config.FilePath),
 		zap.Int("records", len(newData.Data)),
-		zap.map[string]map[string]string("records", newData.Data))
+		zap.Any("records", newData.Data))
 	
 	return nil
 }
